@@ -17,11 +17,10 @@ def explore_then_commit_2_arm(arm1_mean, arm2_mean, T, N):
     """
     
     K = 2   # number of arms
+
+    bound = 0
     
-    bound_1 = 0
-    bound_2 = 0
-    
-    delta = 0.1
+    delta = 0.2
     
     # initialize the number of trials for each arm for total in both exploration and exploitation phases
     N_1 = 0
@@ -58,8 +57,7 @@ def explore_then_commit_2_arm(arm1_mean, arm2_mean, T, N):
     N_1 = N + (greedyArm == 0) * (T - 2*N)
     N_2 = N + (greedyArm == 1) * (T - 2*N)
     
-    bound_1 = math.sqrt( 1*math.log(K*T/(K*delta)) / N_1 )
-    bound_2 = math.sqrt( math.log(1/(K*delta)) / T )
+    bound = math.sqrt( math.log(1/(K*delta)) / T )
     
     armSamples[greedyArm] += bernoulliTrial(armMeans[greedyArm], T-N-N)
     
@@ -68,7 +66,7 @@ def explore_then_commit_2_arm(arm1_mean, arm2_mean, T, N):
     armSampleMeans[0] = armSamples[0] / N_1
     armSampleMeans[1] = armSamples[1] / N_2
     
-    return totalAverageReward, armSampleMeans, bound_1, bound_2, N_1, N_2,totalAverageReward
+    return totalAverageReward, armSampleMeans, bound, totalAverageReward
 
 def bernoulliTrial(p, n):
     """ do n beurnoulli trials with probability p and return the total reward
@@ -109,24 +107,30 @@ def main():
     
     num = 1000  # number of repetitions to be made
     
-    arm_1_bound_count = 0
-    arm_2_bound_count = 0
+    bound_count = 0
     
     N_1 = 0
     N_2 = 0
     
-    boundCount = np.zeros((len(N_array), 2))
+    boundCount = np.zeros(len(N_array))
     
     for j in range(num):
         for i in range(len(N_array)):
-            temp, armSampleMeans, bound_1, bound_2, N_1, N_2, totalAverageReward = explore_then_commit_2_arm(0.4, 0.8, 500, N_array[i])    # set N_array[i]//2 instead of N_array[i] to get similar results to part a of Q1
-            if totalAverageReward < 0.8 + bound_2 and armSampleMeans[1] > 0.8 - bound_2:
+            temp, armSampleMeans, bound, totalAverageReward = explore_then_commit_2_arm(0.4, 0.8, 500, N_array[i])    # set N_array[i]//2 instead of N_array[i] to get similar results to part a of Q1
+            if totalAverageReward < 0.8 + bound and armSampleMeans[1] > 0.8 - bound:
                 totalRewardsArray[i] += temp
-                arm_2_bound_count += 1
-                boundCount[i][1] += 1 
+                bound_count += 1
+                boundCount[i] += 1 
     
-    print(f"arm1 was in the bound with probability % {100 * boundCount[4][0] / num }")
-    print(f"arm2 was in the bound with probability % {100 * boundCount[4][1] / num }")
+    print(f"ETC with N=1 was in the bound with probability % {100 * boundCount[0] / num }")
+    print(f"ETC with N=6 was in the bound with probability % {100 * boundCount[1] / num }")
+    print(f"ETC with N=11 was in the bound with probability % {100 * boundCount[2] / num }")
+    print(f"ETC with N=16 was in the bound with probability % {100 * boundCount[3] / num }")
+    print(f"ETC with N=21 was in the bound with probability % {100 * boundCount[4] / num }")
+    print(f"ETC with N=26 was in the bound with probability % {100 * boundCount[5] / num }")
+    print(f"ETC with N=31 was in the bound with probability % {100 * boundCount[6] / num }")
+    print(f"ETC with N=41 was in the bound with probability % {100 * boundCount[7] / num }")
+    print(f"ETC with N=46 was in the bound with probability % {100 * boundCount[8] / num }")
                 
     totalAverageRewardArray = totalRewardsArray / num
     
