@@ -107,7 +107,7 @@ def main():
     
     bound_count = 0
 
-    delta = 0.3
+    delta = 0.4
     
     boundCount = np.zeros(len(N_array))
     
