@@ -4,7 +4,7 @@ import math
 
 # Implementation of Explore-Then-Commit algorithm for arm 1 and arm 2 with beurnoulli 
 # distributions with 0.4 and 0.8 means respectively using 1000 trials and 500 time steps
-def explore_then_commit_2_arm(arm1_mean, arm2_mean, T, N):    
+def explore_then_commit_2_arm(arm1_mean, arm2_mean, T, N, delta):    
     """implement an Explore-Then-Commit algorithm for a 2-armed bandit problem with beurnoulli distributions
     Args:
         arm1_mean (_type_): mean value of the beurnoulli distribution for arm 1
@@ -19,8 +19,6 @@ def explore_then_commit_2_arm(arm1_mean, arm2_mean, T, N):
     K = 2   # number of arms
 
     bound = 0
-    
-    delta = 0.2
     
     # initialize the number of trials for each arm for total in both exploration and exploitation phases
     N_1 = 0
@@ -108,15 +106,14 @@ def main():
     num = 1000  # number of repetitions to be made
     
     bound_count = 0
-    
-    N_1 = 0
-    N_2 = 0
+
+    delta = 0.3
     
     boundCount = np.zeros(len(N_array))
     
     for j in range(num):
         for i in range(len(N_array)):
-            temp, armSampleMeans, bound, totalAverageReward = explore_then_commit_2_arm(0.4, 0.8, 500, N_array[i])    # set N_array[i]//2 instead of N_array[i] to get similar results to part a of Q1
+            temp, armSampleMeans, bound, totalAverageReward = explore_then_commit_2_arm(0.4, 0.8, 500, N_array[i], delta)    # set N_array[i]//2 instead of N_array[i] to get similar results to part a of Q1
             if totalAverageReward < 0.8 + bound and armSampleMeans[1] > 0.8 - bound:
                 totalRewardsArray[i] += temp
                 bound_count += 1
@@ -131,6 +128,10 @@ def main():
     print(f"ETC with N=31 was in the bound with probability % {100 * boundCount[6] / num }")
     print(f"ETC with N=41 was in the bound with probability % {100 * boundCount[7] / num }")
     print(f"ETC with N=46 was in the bound with probability % {100 * boundCount[8] / num }")
+    
+    print(f"All of these probabilities should be greater than % {100 * ( 1 - 2 * delta) }")
+    
+    print(f"The maximum reward is when N = {N_array[np.argmax(totalRewardsArray)]}")
                 
     totalAverageRewardArray = totalRewardsArray / num
     
